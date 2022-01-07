@@ -14,15 +14,27 @@ function resultReducer(state: string, action: { type: string, payload?: string }
   }
 }
 
-function isLegitReducer(state: number[], action: { type: string, payload?: { isReal: boolean, num: number } }) {
+function isLegitReducer(state: { real: number, fake: number }, action: { type: string, payload?: { isReal: boolean, num: number } }) {
   switch (action.type) {
     case 'clear':
-      return [0, 0];
+      return { real: 0, fake: 0 };
     case 'update':
-      return action.payload ? [
-        state[0] + (action.payload.isReal ? action.payload.num : 0),
-        state[1] + (action.payload.isReal ? 0 : action.payload.num),
-      ] : [];
+      console.log(action.payload);
+      if (action.payload) {
+        if (action.payload.isReal) {
+          return {
+            ...state,
+            real: state.real + action.payload.num,
+          };
+        } else {
+          return {
+            ...state,
+            fake: state.fake + action.payload.num,
+          };
+        }
+      } else {
+        return { real: 0, fake: 0 };
+      }
     default:
       throw new Error();
   }
@@ -68,7 +80,7 @@ const Main = () => {
   const [text, setText] = useState('');
   const [isReal, setIsReal] = useState<boolean | null>(null);
   const [result, resultDispatch] = useReducer(resultReducer, '');
-  const [isLegit, isLegitDispatch] = useReducer(isLegitReducer, [0, 0]);
+  const [isLegit, isLegitDispatch] = useReducer(isLegitReducer, { real: 0, fake: 0 });
 
   const onSubmit = async () => {
     const paras = text.split('\n').map(x => x.trim());
@@ -88,13 +100,13 @@ const Main = () => {
         resultDispatch({ type: 'append', payload: '<br />\n' });
       }
     }
-    if (isLegit[0] === 0 && isLegit[1] !== 0) {
-      console.log('fake', isLegit[1]);
+    if (isLegit.real === 0 && isLegit.fake !== 0) {
+      console.log('fake', isLegit.fake);
       setIsReal(false);
-    } else if (isLegit[1] === 0 && isLegit[0] !== 0) {
-      console.log('real', isLegit[0]);
+    } else if (isLegit.fake === 0 && isLegit.real !== 0) {
+      console.log('real', isLegit.real);
       setIsReal(true);
-    } else if (isLegit[0] / isLegit[1] > 1.5) {
+    } else if (isLegit.real > isLegit.fake) {
       setIsReal(true);
     } else {
       setIsReal(false);

@@ -26,9 +26,8 @@ export const verifyApi = async (
     }),
   });
   const data = await res.json();
-  // remove first and last item from data.data
   return {
-    isReal: data.isReal,
+    isReal: data.is_real,
     data: (data.data.slice(1, data.data.length - 1) as (string | number)[][])
       .map((x) => {
         const token = x[0] as string;
@@ -36,7 +35,7 @@ export const verifyApi = async (
         return {
           token: token.startsWith('##') ? token.slice(2) : token,
           color,
-          isStart: !token.startsWith('##'),
+          isStart: !token.startsWith('##') && token !== '.' && token !== ',' && token !== ';' && token !== ':' && token !== '!' && token !== '?' && token !== '\'',
         };
       }),
   };
