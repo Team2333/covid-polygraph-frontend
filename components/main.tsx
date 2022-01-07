@@ -1,7 +1,8 @@
 import { useState, useReducer } from 'react';
-import { Button, TextArea, Layout, Typography } from '@douyinfe/semi-ui';
+import { Button, TextArea, Layout, Typography, Toast } from '@douyinfe/semi-ui';
 import { useLocale } from '../lib/i18n';
 import { verifyApi } from '../lib/api';
+import Loading from './loading';
 
 function resultReducer(state: string, action: { type: string, payload?: string }) {
   switch (action.type) {
@@ -75,41 +76,55 @@ const Main = () => {
       ja_JP: '実',
       ms_MY: 'Benar',
     },
+    textLoading: {
+      zh_CN: '正在检测...',
+      en_US: 'Checking...',
+      ja_JP: '検査中...',
+      ms_MY: 'Memeriksa...',
+    },
   }, 'en_US');
 
   const [text, setText] = useState('');
+  const [loadingProps, setLoadingProps] = useState({ active: false, text: '' });
   const [isReal, setIsReal] = useState<boolean | null>(null);
   const [result, resultDispatch] = useReducer(resultReducer, '');
   const [isLegit, isLegitDispatch] = useReducer(isLegitReducer, { real: 0, fake: 0 });
 
   const onSubmit = async () => {
-    const paras = text.split('\n').map(x => x.trim());
-    resultDispatch({ type: 'clear' });
-    isLegitDispatch({ type: 'clear' });
-    setIsReal(null);
-    for (let i = 0; i < paras.length; i++) {
-      const para = paras[i];
-      if (para.length > 0) {
-        const res = await verifyApi(para);
-        isLegitDispatch({ type: 'update', payload: { isReal: res.isReal, num: res.data.length } });
-        res.data.forEach(x => {
-          const h = `${x.isStart ? '<span style="word-spacing:normal; letter-spacing:normal;">&nbsp;</span>' : ''}<span style="color:${x.color}; word-spacing:normal; letter-spacing:normal;">${x.token}</span>\n`;
-          resultDispatch({ type: 'append', payload: h });
-        });
-      } else {
-        resultDispatch({ type: 'append', payload: '<br />\n' });
+    setLoadingProps({ active: true, text: locale.textLoading });
+    try {
+      const paras = text.split('\n').map(x => x.trim());
+      resultDispatch({ type: 'clear' });
+      isLegitDispatch({ type: 'clear' });
+      setIsReal(null);
+      for (let i = 0; i < paras.length; i++) {
+        const para = paras[i];
+        if (para.length > 0) {
+          const res = await verifyApi(para);
+          isLegitDispatch({ type: 'update', payload: { isReal: res.isReal, num: res.data.length } });
+          res.data.forEach(x => {
+            const h = `${x.isStart ? '<span style="word-spacing:normal; letter-spacing:normal;">&nbsp;</span>' : ''}<span style="color:${x.color}; word-spacing:normal; letter-spacing:normal;${x.impt ? ' text-decoration:underline;' : ''}">${x.token}</span>\n`;
+            resultDispatch({ type: 'append', payload: h });
+          });
+        } else {
+          resultDispatch({ type: 'append', payload: '<br /><br />\n' });
+        }
       }
-    }
-    if (isLegit.real === 0 && isLegit.fake !== 0) {
-      console.log('fake', isLegit.fake);
-      setIsReal(false);
-    } else if (isLegit.fake === 0 && isLegit.real !== 0) {
-      console.log('real', isLegit.real);
-      setIsReal(true);
-    } else if (isLegit.real > isLegit.fake) {
-      setIsReal(true);
-    } else {
-      setIsReal(false);
+      if (isLegit.real === 0 && isLegit.fake !== 0) {
+        console.log('fake', isLegit.fake);
+        setIsReal(false);
+      } else if (isLegit.fake === 0 && isLegit.real !== 0) {
+        console.log('real', isLegit.real);
+        setIsReal(true);
+      } else if (isLegit.real > isLegit.fake) {
+        setIsReal(true);
+      } else {
+        setIsReal(false);
+      }
+    } catch (e) {
+      Toast.error(e as string);
+    } finally {
+      setLoadingProps({ active: false, text: '' });
     }
   };
 
@@ -139,6 +154,7 @@ const Main = () => {
         <Button
           theme='solid'
           className='submit-button-inside'
+          disabled={loadingProps.active}
           onClick={onSubmit}
         >
           {locale.buttonText}
@@ -168,10 +184,12 @@ const Main = () => {
       <Button
         theme='solid'
         className='submit-button-outside'
+        disabled={loadingProps.active}
         onClick={onSubmit}
       >
         {locale.buttonText}
       </Button>
+      <Loading {...loadingProps} />
     </Content>
   );
 };
