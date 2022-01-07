@@ -8,6 +8,13 @@ import { IconMoon, IconSun, IconLanguage } from '@douyinfe/semi-icons';
 import logos from '../res/logos.json';
 import { languageList } from '../lib/i18n';
 
+const languages: Record<string, string> = {
+  en_US: 'English (US)',
+  zh_CN: '中文 (简体)',
+  ja_JP: '日本語',
+  ms_MY: 'Bahasa Melayu',
+};
+
 const Header = () => {
   const { Header } = Layout;
 
@@ -86,7 +93,7 @@ const Header = () => {
                         }}
                         key={x}
                       >
-                        {x}
+                        { languages[x] }
                       </Dropdown.Item>
                     ))
                   }

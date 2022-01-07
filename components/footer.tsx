@@ -9,6 +9,7 @@ const Footer = () => {
       zh_CN: '版权 © 2022 Covid-Polygraph。 版权所有。',
       en_US: 'Copyright © 2022 Covid-Polygraph. All Rights Reserved.',
       ja_JP: '著作権 © 2022 Covid-Polygraph。全ての権利を有する。',
+      ms_MY: 'Hak cipta © 2022 Covid-Polygraph. Semua hak cipta.',
     },
   }, 'en_US');
 

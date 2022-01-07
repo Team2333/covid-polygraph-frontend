@@ -21,3 +21,64 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.main-container {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: var(--semi-color-bg-1);
+}
+
+.textarea-container {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+}
+
+.textarea-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.submit-button-inside {
+  display: none;
+}
+
+.submit-button-outside {
+  display: block;
+}
+
+.textarea-container textarea {
+  box-sizing: border-box; /* fit parent width */
+  height: 100%;
+}
+
+.overflow-container {
+  max-height: calc(100vh - 244px);
+  overflow-y: auto;
+}
+
+.result-content {
+  color: var(--semi-color-text-1);
+}
+
+@media only screen and (max-width: 768px) {
+  /* For mobile phones: */
+  .textarea-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .submit-button-inside {
+    display: block;
+  }
+  .submit-button-outside {
+    display: none;
+  }
+  .overflow-container {
+    max-height: calc(50vh - 160px);
+  }
+}

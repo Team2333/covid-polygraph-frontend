@@ -23,7 +23,7 @@ export const languageList: { [key: string]: Locale } = {
   'en_US': en_US,
   'zh_CN': zh_CN,
   'ja_JP': ja_JP,
-  // 'ms_MY': ms_MY,
+  'ms_MY': ms_MY,
   // 'id_ID': id_ID,
   // 'en_GB': en_GB,
   // 'ko_KR': ko_KR,
