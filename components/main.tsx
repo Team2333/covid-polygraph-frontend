@@ -14,6 +14,20 @@ function resultReducer(state: string, action: { type: string, payload?: string }
   }
 }
 
+function isLegitReducer(state: number[], action: { type: string, payload?: { isReal: boolean, num: number } }) {
+  switch (action.type) {
+    case 'clear':
+      return [0, 0];
+    case 'update':
+      return action.payload ? [
+        state[0] + (action.payload.isReal ? action.payload.num : 0),
+        state[1] + (action.payload.isReal ? 0 : action.payload.num),
+      ] : [];
+    default:
+      throw new Error();
+  }
+}
+
 const Main = () => {
   const { Content } = Layout;
   const { Title } = Typography;
@@ -37,26 +51,48 @@ const Main = () => {
       ja_JP: '提出',
       ms_MY: 'Hantar',
     },
+    fakeText: {
+      zh_CN: '虚假',
+      en_US: 'Fake',
+      ja_JP: '偽',
+      ms_MY: 'Bukan',
+    },
+    realText: {
+      zh_CN: '真实',
+      en_US: 'Real',
+      ja_JP: '実',
+      ms_MY: 'Benar',
+    },
   }, 'en_US');
 
   const [text, setText] = useState('');
+  const [isFake, setIsFake] = useState<boolean | null>(null);
   const [result, resultDispatch] = useReducer(resultReducer, '');
+  const [isLegit, isLegitDispatch] = useReducer(isLegitReducer, [0, 0]);
 
   const onSubmit = async () => {
     const paras = text.split('\n').map(x => x.trim());
     resultDispatch({ type: 'clear' });
+    setIsFake(null);
     for (let i = 0; i < paras.length; i++) {
       const para = paras[i];
-      const res = await verifyApi(para);
       if (para.length > 0) {
-        const h = `<p>${para}</p>\n`;
-        console.log(h);
-        resultDispatch({ type: 'append', payload: h });
+        const res = await verifyApi(para);
+        isLegitDispatch({ type: 'update', payload: { isReal: res.isReal, num: res.data.length } });
+        res.data.forEach(x => {
+          const h = `<span style="color:${x.color}">${x.token}</span>\n`;
+          resultDispatch({ type: 'append', payload: h });
+        });
       } else {
-        resultDispatch({ type: 'append', payload: '\n' });
+        resultDispatch({ type: 'append', payload: '<br />\n' });
       }
     }
-    console.log(result);
+    if (isLegit[0] / isLegit[1] > 1.5) {
+      setIsFake(true);
+    } else {
+      setIsFake(false);
+    }
+    // console.log(result);
   };
 
   return (
@@ -67,7 +103,7 @@ const Main = () => {
             heading={3}
             style={{ alignSelf: 'center' }}
           >
-            { locale.textTitle }
+            {locale.textTitle}
           </Title>
           <div style={{
             flex: 1,
@@ -94,7 +130,7 @@ const Main = () => {
             heading={3}
             style={{ alignSelf: 'center' }}
           >
-            { locale.resultTitle }
+            {locale.resultTitle} {isFake === null ? '' : isFake ? `(${locale.fakeText})` : `(${locale.realText})`}
           </Title>
           <div
             className='overflow-container'
@@ -116,7 +152,7 @@ const Main = () => {
         className='submit-button-outside'
         onClick={onSubmit}
       >
-        { locale.buttonText }
+        {locale.buttonText}
       </Button>
     </Content>
   );
