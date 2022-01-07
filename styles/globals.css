@@ -1,5 +1,21 @@
 @import '~@douyinfe/semi-ui/dist/css/semi.min.css';
 
+:root {
+  --para-color-p-0: hsl(0, 100%, 0%);
+  --para-color-p-1: hsl(0, 100%, 30%);
+  --para-color-p-2: hsl(0, 100%, 38%);
+  --para-color-p-3: hsl(0, 100%, 43%);
+  --para-color-p-4: hsl(0, 100%, 47%);
+  --para-color-p-5: hsl(0, 100%, 50%);
+  --para-color-n-0: hsl(0, 0%, 0%);
+  --para-color-n-1: hsl(0, 0%, 30%);
+  --para-color-n-2: hsl(0, 0%, 38%);
+  --para-color-n-3: hsl(0, 0%, 43%);
+  --para-color-n-4: hsl(0, 0%, 47%);
+  --para-color-n-5: hsl(0, 0%, 50%);
+  --paras-color-bg: #f4f5f5;
+}
+
 html,
 body {
   padding: 0;
@@ -64,6 +80,8 @@ a {
 
 .result-content {
   color: var(--semi-color-text-1);
+  word-spacing:-3px;
+  letter-spacing: -3px;
 }
 
 @media only screen and (max-width: 768px) {

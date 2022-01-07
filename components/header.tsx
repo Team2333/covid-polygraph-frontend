@@ -15,6 +15,41 @@ const languages: Record<string, string> = {
   ms_MY: 'Bahasa Melayu',
 };
 
+const setDarkMode = (darkMode: boolean) => {
+  const root = document.documentElement;
+  if (darkMode) {
+    document.body.setAttribute('theme-mode', 'dark');
+    root.style.setProperty('--para-color-p-0', 'hsl(0, 100%, 100%)');
+    root.style.setProperty('--para-color-p-1', 'hsl(0, 100%, 80%)');
+    root.style.setProperty('--para-color-p-2', 'hsl(0, 100%, 70%)');
+    root.style.setProperty('--para-color-p-3', 'hsl(0, 100%, 65%)');
+    root.style.setProperty('--para-color-p-4', 'hsl(0, 100%, 57%)');
+    root.style.setProperty('--para-color-p-5', 'hsl(0, 100%, 50%)');
+    root.style.setProperty('--para-color-n-0', 'hsl(0, 0%, 100%)');
+    root.style.setProperty('--para-color-n-1', 'hsl(0, 0%, 80%)');
+    root.style.setProperty('--para-color-n-2', 'hsl(0, 0%, 70%)');
+    root.style.setProperty('--para-color-n-3', 'hsl(0, 0%, 65%)');
+    root.style.setProperty('--para-color-n-4', 'hsl(0, 0%, 57%)');
+    root.style.setProperty('--para-color-n-5', 'hsl(0, 0%, 50%)');
+    root.style.setProperty('--paras-color-bg', '#2e2f34');
+  } else {
+    document.body.removeAttribute('theme-mode');
+    root.style.setProperty('--para-color-p-0', 'hsl(0, 100%, 0%)');
+    root.style.setProperty('--para-color-p-1', 'hsl(0, 100%, 20%)');
+    root.style.setProperty('--para-color-p-2', 'hsl(0, 100%, 30%)');
+    root.style.setProperty('--para-color-p-3', 'hsl(0, 100%, 35%)');
+    root.style.setProperty('--para-color-p-4', 'hsl(0, 100%, 43%)');
+    root.style.setProperty('--para-color-p-5', 'hsl(0, 100%, 50%)');
+    root.style.setProperty('--para-color-n-0', 'hsl(0, 0%, 0%)');
+    root.style.setProperty('--para-color-n-1', 'hsl(0, 0%, 20%)');
+    root.style.setProperty('--para-color-n-2', 'hsl(0, 0%, 30%)');
+    root.style.setProperty('--para-color-n-3', 'hsl(0, 0%, 35%)');
+    root.style.setProperty('--para-color-n-4', 'hsl(0, 0%, 43%)');
+    root.style.setProperty('--para-color-n-5', 'hsl(0, 0%, 50%)');
+    root.style.setProperty('--paras-color-bg', '#f4f5f5');
+  }
+};
+
 const Header = () => {
   const { Header } = Layout;
 
@@ -23,11 +58,7 @@ const Header = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (isDarkMode) {
-      document.body.setAttribute('theme-mode', 'dark');
-    } else {
-      document.body.removeAttribute('theme-mode');
-    }
+    setDarkMode(isDarkMode);
   }, [isDarkMode]);
 
   return (

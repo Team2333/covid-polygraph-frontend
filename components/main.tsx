@@ -66,33 +66,39 @@ const Main = () => {
   }, 'en_US');
 
   const [text, setText] = useState('');
-  const [isFake, setIsFake] = useState<boolean | null>(null);
+  const [isReal, setIsReal] = useState<boolean | null>(null);
   const [result, resultDispatch] = useReducer(resultReducer, '');
   const [isLegit, isLegitDispatch] = useReducer(isLegitReducer, [0, 0]);
 
   const onSubmit = async () => {
     const paras = text.split('\n').map(x => x.trim());
     resultDispatch({ type: 'clear' });
-    setIsFake(null);
+    isLegitDispatch({ type: 'clear' });
+    setIsReal(null);
     for (let i = 0; i < paras.length; i++) {
       const para = paras[i];
       if (para.length > 0) {
         const res = await verifyApi(para);
         isLegitDispatch({ type: 'update', payload: { isReal: res.isReal, num: res.data.length } });
         res.data.forEach(x => {
-          const h = `<span style="color:${x.color}">${x.token}</span>\n`;
+          const h = `${x.isStart ? '<span style="word-spacing:normal; letter-spacing:normal;">&nbsp;</span>' : ''}<span style="color:${x.color}; word-spacing:normal; letter-spacing:normal;">${x.token}</span>\n`;
           resultDispatch({ type: 'append', payload: h });
         });
       } else {
         resultDispatch({ type: 'append', payload: '<br />\n' });
       }
     }
-    if (isLegit[0] / isLegit[1] > 1.5) {
-      setIsFake(true);
+    if (isLegit[0] === 0 && isLegit[1] !== 0) {
+      console.log('fake', isLegit[1]);
+      setIsReal(false);
+    } else if (isLegit[1] === 0 && isLegit[0] !== 0) {
+      console.log('real', isLegit[0]);
+      setIsReal(true);
+    } else if (isLegit[0] / isLegit[1] > 1.5) {
+      setIsReal(true);
     } else {
-      setIsFake(false);
+      setIsReal(false);
     }
-    // console.log(result);
   };
 
   return (
@@ -130,13 +136,13 @@ const Main = () => {
             heading={3}
             style={{ alignSelf: 'center' }}
           >
-            {locale.resultTitle} {isFake === null ? '' : isFake ? `(${locale.fakeText})` : `(${locale.realText})`}
+            {locale.resultTitle} {isReal === null ? '' : isReal ? `(${locale.realText})` : `(${locale.fakeText})`}
           </Title>
           <div
             className='overflow-container'
             style={{
               flex: 1,
-              backgroundColor: 'var(--semi-color-bg-3)',
+              backgroundColor: 'var(--paras-color-bg)',
               borderRadius: '4px',
             }}
           >
