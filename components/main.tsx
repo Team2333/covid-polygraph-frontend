@@ -154,7 +154,7 @@ const Main = () => {
         <Button
           theme='solid'
           className='submit-button-inside'
-          disabled={loadingProps.active}
+          disabled={loadingProps.active || text.trim().length === 0}
           onClick={onSubmit}
         >
           {locale.buttonText}
@@ -184,7 +184,7 @@ const Main = () => {
       <Button
         theme='solid'
         className='submit-button-outside'
-        disabled={loadingProps.active}
+        disabled={loadingProps.active || text.trim().length === 0}
         onClick={onSubmit}
       >
         {locale.buttonText}
