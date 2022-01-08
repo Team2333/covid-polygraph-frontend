@@ -1,4 +1,4 @@
-import { useState, useReducer } from 'react';
+import { useState, useEffect, useReducer } from 'react';
 import { Button, TextArea, Layout, Typography, Toast } from '@douyinfe/semi-ui';
 import { useLocale } from '../lib/i18n';
 import { verifyApi } from '../lib/api';
@@ -20,7 +20,6 @@ function isLegitReducer(state: { real: number, fake: number }, action: { type: s
     case 'clear':
       return { real: 0, fake: 0 };
     case 'update':
-      console.log(action.payload);
       if (action.payload) {
         if (action.payload.isReal) {
           return {
@@ -90,6 +89,20 @@ const Main = () => {
   const [result, resultDispatch] = useReducer(resultReducer, '');
   const [isLegit, isLegitDispatch] = useReducer(isLegitReducer, { real: 0, fake: 0 });
 
+  useEffect(() => {
+    if (isLegit.real === 0 && isLegit.fake === 0) {
+      setIsReal(null);
+    } else if (isLegit.real === 0 && isLegit.fake !== 0) {
+      setIsReal(false);
+    } else if (isLegit.fake === 0 && isLegit.real !== 0) {
+      setIsReal(true);
+    } else if (isLegit.real > isLegit.fake) {
+      setIsReal(true);
+    } else {
+      setIsReal(false);
+    }
+  }, [isLegit]);
+
   const onSubmit = async () => {
     setLoadingProps({ active: true, text: locale.textLoading });
     try {
@@ -109,17 +122,6 @@ const Main = () => {
         } else {
           resultDispatch({ type: 'append', payload: '<br /><br />\n' });
         }
-      }
-      if (isLegit.real === 0 && isLegit.fake !== 0) {
-        console.log('fake', isLegit.fake);
-        setIsReal(false);
-      } else if (isLegit.fake === 0 && isLegit.real !== 0) {
-        console.log('real', isLegit.real);
-        setIsReal(true);
-      } else if (isLegit.real > isLegit.fake) {
-        setIsReal(true);
-      } else {
-        setIsReal(false);
       }
     } catch (e) {
       Toast.error(e as string);
